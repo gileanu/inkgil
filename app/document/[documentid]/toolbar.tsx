@@ -1,10 +1,16 @@
 "use client";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/store/use-editor-store";
 import {
   BoldIcon,
+  ChevronDownIcon,
   ItalicIcon,
   ListTodoIcon,
   LucideIcon,
@@ -15,6 +21,44 @@ import {
   UnderlineIcon,
   Undo2Icon,
 } from "lucide-react";
+
+const FontFamilyButton = () => {
+  const { editor } = useEditorStore();
+  const fonts = [
+    { label: "Arial", value: "Arial" },
+    { label: "Times New Roman", value: "Times New Roman" },
+    { label: "Courier New", value: "Courier New" },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 w-[120px] shrink-0 flex items-center justify-between rounded-sm hover:bg-slate-100 px-1.5 overflow-hidden text-sm">
+          <span className="truncate">
+            {editor?.getAttributes("textStyle").FontFamily || "Arial"}
+          </span>
+          <ChevronDownIcon className="ml-2 size-4 shrink-0" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
+        {fonts.map(({ label, value }) => (
+          <button
+            key={value}
+            style={{ fontFamily: value }}
+            onClick={() => editor?.chain().focus().setFontFamily(value).run()}
+            className={cn(
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-slate-200",
+              editor?.getAttributes("textStyle").FontFamily === value &&
+                "bg-slate-400"
+            )}
+          >
+            <span className="text-sm">{label}</span>
+          </button>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 interface ToolbarButtonProps {
   onClick?: () => void;
@@ -118,6 +162,8 @@ export const Toolbar = () => {
       {sections[2].map((item) => (
         <ToolbarButton key={item.label} {...item} />
       ))}
+      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+      <FontFamilyButton />
     </div>
   );
 };
