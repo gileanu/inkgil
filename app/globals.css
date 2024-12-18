@@ -89,7 +89,7 @@ body {
 
 .tiptap {
   :first-child {
-    display: block;
+    margin-top: 0;
   }
 
   /* Heading styles */
