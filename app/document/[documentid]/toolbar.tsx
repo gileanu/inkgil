@@ -8,6 +8,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/store/use-editor-store";
+import { type Level } from "@tiptap/extension-heading";
 import {
   BoldIcon,
   ChevronDownIcon,
@@ -22,8 +23,96 @@ import {
   Undo2Icon,
 } from "lucide-react";
 
+const HeadingsButton = () => {
+  const { editor } = useEditorStore();
+
+  const headings = [
+    {
+      label: "Normal",
+      value: 0,
+      fontSize: "1rem",
+    },
+    {
+      label: "H1",
+      value: 1,
+      fontSize: "1.4rem",
+    },
+    {
+      label: "H2",
+      value: 2,
+      fontSize: "1.2rem",
+    },
+    {
+      label: "H3",
+      value: 3,
+      fontSize: "1.1rem",
+    },
+    {
+      label: "H4",
+      value: 4,
+      fontSize: "1rem",
+    },
+    {
+      label: "H5",
+      value: 5,
+      fontSize: "1rem",
+    },
+    {
+      label: "H6",
+      value: 6,
+      fontSize: "1rem",
+    },
+  ];
+
+  const getCurrentHeading = () => {
+    for (let level = 1; level <= 5; level++) {
+      if (editor?.isActive("heading", { level })) {
+        return `Heading ${level}`;
+      }
+    }
+    return "Paragraph";
+  };
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-slate-100 px-1.5 overflow-hidden text-sm">
+          <span className="truncate">{getCurrentHeading()}</span>
+          <ChevronDownIcon className="ml-2 size-4 shrink-0" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
+        {headings.map(({ label, value, fontSize }) => (
+          <button
+            key={value}
+            style={{ fontSize }}
+            onClick={() => {
+              if (value === 0) {
+                editor?.chain().setParagraph().run();
+              } else {
+                editor
+                  ?.chain()
+                  .toggleHeading({ level: value as Level })
+                  .run();
+              }
+            }}
+            className={cn(
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-slate-200",
+              (value === 0 && !editor?.isActive("heading")) ||
+                (editor?.isActive("heading", { level: value }) &&
+                  "bg-slate-200")
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 const FontFamilyButton = () => {
   const { editor } = useEditorStore();
+
   const fonts = [
     { label: "Arial", value: "Arial" },
     { label: "Times New Roman", value: "Times New Roman" },
@@ -164,6 +253,7 @@ export const Toolbar = () => {
       ))}
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <FontFamilyButton />
+      <HeadingsButton />
     </div>
   );
 };

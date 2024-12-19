@@ -62,7 +62,7 @@ export const Editor = () => {
       FontFamily,
       TextStyle,
     ],
-    content: "e21e12",
+    content: "Test Text",
   });
   return (
     <div className="size-full overflow-x-auto bg-[#fff] px-4 print:p-0 print:bg-white print:overflow-visible">
